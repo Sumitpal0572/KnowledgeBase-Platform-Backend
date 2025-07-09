@@ -5,5 +5,6 @@ const { protect } = require('../middleware/authMiddleware');
 
 router.route('/').post(protect, createDoc).get(protect, getDocs);
 router.route('/:id').put(protect, updateDoc);
+router.get('/:id/versions', protect, getDocVersions);
 
 module.exports = router;

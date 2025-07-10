@@ -1,5 +1,6 @@
 import { use } from 'react'
 import User from '../models/User.js'
+import generateToken from '../utils/generateToken.js';
 
 export const register = async (req, res) => {
     const { name, email, password } = req.body
@@ -17,6 +18,7 @@ export const register = async (req, res) => {
             password: user.password
         });
     } catch (error) {
+        console.log('Register Error:', error)
         res.status(500).json({ message: "Server Error" })
     }
 };
@@ -38,6 +40,7 @@ export const login = async (req, res) => {
             res.status(401).json({ message: 'Invalid credentials' });
         }
     } catch (err) {
+        console.log('lohin error :', err)
         res.status(500).json({ message: 'Server error' });
     }
 };

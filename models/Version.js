@@ -8,4 +8,5 @@ const versionSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-export default ('Version', versionSchema)
+const Version = mongoose.model('Version', versionSchema);
+export default Version;

@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        unique: true
     }
 
 }, { timestamps: true })
@@ -31,4 +30,5 @@ userSchema.methods.matchPassword = function (password) {
 
 
 
-export default ('User', userSchema)
+const User = mongoose.model('User', userSchema);
+export default User;

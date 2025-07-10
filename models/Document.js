@@ -30,4 +30,5 @@ const documentSchema = new mongoose.Schema({
 
 
 
-export default ('Document', documentSchema)
+const Document = mongoose.model('Document', documentSchema);
+export default Document;

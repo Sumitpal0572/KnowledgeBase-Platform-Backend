@@ -1,11 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-const authRoutes = require('./routes/authRoutes');
-const documentRoutes = require('./routes/documentRoutes');
-const userRoutes = require('./routes/userRoutes');
-const errorHandler = require('./middleware/errorHandler');
+import express from 'express'
+import cors from 'cors'
+import morgan from "morgan"
+import cookieParser from 'cookie-parser';
+import authRoutes from './routes/authRoutes.js'
+import documentRoutes from './routes/documentRoutes.js';
+import userRoutes from './routes/userRoutes.js'
+import errorHandler from './middleware/errorMiddleware.js'
 
 const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
@@ -18,4 +18,4 @@ app.use('/api/docs', documentRoutes);
 app.use('/api/users', userRoutes);
 
 app.use(errorHandler);
-module.exports = app;
+export default app;

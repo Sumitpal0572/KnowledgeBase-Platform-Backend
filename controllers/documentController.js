@@ -1,8 +1,8 @@
-const Document = require('../models/Document');
-const Version = require('../models/Version');
+import Document from '../models/Document.js'
+import Version from '../models/Version.js'
 
 // Create a new document
-exports.createDoc = async (req, res) => {
+export const createDoc = async (req, res) => {
     try {
         const doc = await Document.create({
             title: req.body.title,
@@ -18,7 +18,7 @@ exports.createDoc = async (req, res) => {
 };
 
 // Get all accessible documents
-exports.getDocs = async (req, res) => {
+export const getDocs = async (req, res) => {
     try {
         const docs = await Document.find({
             $or: [
@@ -34,7 +34,7 @@ exports.getDocs = async (req, res) => {
 };
 
 // Update an existing document and save version
-exports.updateDoc = async (req, res) => {
+export const updateDoc = async (req, res) => {
     try {
         const doc = await Document.findById(req.params.id);
         if (!doc) return res.status(404).json({ message: 'Document not found' });
@@ -61,7 +61,7 @@ exports.updateDoc = async (req, res) => {
 };
 
 // Get version history for a document
-exports.getDocVersions = async (req, res) => {
+export const getDocVersions = async (req, res) => {
     try {
         const versions = await Version.find({ document: req.params.id }).populate('author', 'name');
         res.json(versions);

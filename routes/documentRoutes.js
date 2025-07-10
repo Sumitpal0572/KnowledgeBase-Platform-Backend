@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express'
 const router = express.Router();
-const { createDoc, getDocs, updateDoc } = require('../controllers/documentController');
-const { protect } = require('../middleware/authMiddleware');
+import { createDoc, getDocs, updateDoc, getDocVersions } from '../controllers/documentController.js'
+import { protect } from '../middleware/authMiddleware.js'
 
 router.route('/').post(protect, createDoc).get(protect, getDocs);
 router.route('/:id').put(protect, updateDoc);
 router.get('/:id/versions', protect, getDocVersions);
 
-module.exports = router;
+export default router

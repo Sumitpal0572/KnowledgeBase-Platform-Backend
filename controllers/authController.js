@@ -1,7 +1,7 @@
-const { use } = require('react');
-const User = require('../models/User');
+import { use } from 'react'
+import User from '../models/User.js'
 
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
     const { name, email, password } = req.body
     try {
         const userExits = await User.findOne({ email });
@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
 
 // login
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });

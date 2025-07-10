@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-
+import mongoose from 'mongoose';
 const documentSchema = new mongoose.Schema({
 
     title: {
@@ -29,4 +28,6 @@ const documentSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-export const Document = mongoose.Model("Document", documentSchema)
+
+
+export default ('Document', documentSchema)

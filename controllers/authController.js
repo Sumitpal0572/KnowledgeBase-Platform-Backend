@@ -1,27 +1,26 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 
-// Generate JWT token
+// 🔐 Generate JWT token
 const generateToken = (userId) => {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
         expiresIn: '7d',
     });
 };
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
+// ✅ @desc    Register a new user
+// ✅ @route   POST /api/auth/register
 export const register = async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        // Check if user exists
         const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: 'User already exists' });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
 
-        // Create user
         const user = await User.create({ name, email, password });
 
-        // Generate token and set in cookie
         const token = generateToken(user._id);
         res.cookie('token', token, {
             httpOnly: true,
@@ -32,11 +31,12 @@ export const register = async (req, res) => {
 
         res.status(201).json({
             message: 'User registered successfully',
+            token,
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
-            }
+                email: user.email,
+            },
         });
     } catch (err) {
         console.error('Register Error:', err);
@@ -44,21 +44,22 @@ export const register = async (req, res) => {
     }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
+// ✅ @desc    Login user
+// ✅ @route   POST /api/auth/login
 export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Check user
         const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
 
-        // Check password
         const isMatch = await user.matchPassword(password);
-        if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
 
-        // Generate token
         const token = generateToken(user._id);
         res.cookie('token', token, {
             httpOnly: true,
@@ -69,11 +70,12 @@ export const login = async (req, res) => {
 
         res.status(200).json({
             message: 'Login successful',
+            token,
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
-            }
+                email: user.email,
+            },
         });
     } catch (err) {
         console.error('Login Error:', err);
@@ -81,8 +83,8 @@ export const login = async (req, res) => {
     }
 };
 
-// @desc    Logout user
-// @route   POST /api/auth/logout
+// ✅ @desc    Logout user
+// ✅ @route   POST /api/auth/logout
 export const logout = (req, res) => {
     res.clearCookie('token');
     res.status(200).json({ message: 'Logged out successfully' });

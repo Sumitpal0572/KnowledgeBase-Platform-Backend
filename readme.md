@@ -16,3 +16,5 @@ This is the **Express.js + MongoDB** backend for the KnowledgeBase web applicati
 
 ---
 
+### Deployment link 
+[live](https://knowledgebase-platform-backend-4.onrender.com)

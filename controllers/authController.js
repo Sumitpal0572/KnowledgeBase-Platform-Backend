@@ -1,46 +1,89 @@
-import { use } from 'react'
-import User from '../models/User.js'
-import generateToken from '../utils/generateToken.js';
+import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
 
+// Generate JWT token
+const generateToken = (userId) => {
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+        expiresIn: '7d',
+    });
+};
+
+// @desc    Register a new user
+// @route   POST /api/auth/register
 export const register = async (req, res) => {
-    const { name, email, password } = req.body
+    const { name, email, password } = req.body;
+
     try {
-        const userExits = await User.findOne({ email });
-        if (userExits) return res.status(400).json({ message: "User already Exits" });
+        // Check if user exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
-        // Create new User
-
+        // Create user
         const user = await User.create({ name, email, password });
-        res.status(200).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            password: user.password
+
+        // Generate token and set in cookie
+        const token = generateToken(user._id);
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-    } catch (error) {
-        console.log('Register Error:', error)
-        res.status(500).json({ message: "Server Error" })
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+    } catch (err) {
+        console.error('Register Error:', err);
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
-// login
-
+// @desc    Login user
+// @route   POST /api/auth/login
 export const login = async (req, res) => {
     const { email, password } = req.body;
+
     try {
+        // Check user
         const user = await User.findOne({ email });
-        if (user && (await user.matchPassword(password))) {
-            res.json({
-                _id: user._id,
+        if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+
+        // Check password
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+        // Generate token
+        const token = generateToken(user._id);
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.status(200).json({
+            message: 'Login successful',
+            user: {
+                id: user._id,
                 name: user.name,
-                email: user.email,
-                token: generateToken(user._id)
-            });
-        } else {
-            res.status(401).json({ message: 'Invalid credentials' });
-        }
+                email: user.email
+            }
+        });
     } catch (err) {
-        console.log('lohin error :', err)
+        console.error('Login Error:', err);
         res.status(500).json({ message: 'Server error' });
     }
+};
+
+// @desc    Logout user
+// @route   POST /api/auth/logout
+export const logout = (req, res) => {
+    res.clearCookie('token');
+    res.status(200).json({ message: 'Logged out successfully' });
 };

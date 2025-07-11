@@ -12,8 +12,21 @@ import errorHandler from './middleware/errorMiddleware.js';
 const app = express();
 
 // ✅ CORS setup with fallback if env is missing
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
-app.use(cors({ origin: allowedOrigin, credentials: true }));
+const whitelist = [
+    "http://localhost:5173",                  // local dev
+    process.env.FRONTEND_URL,                // production frontend (from .env)
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || whitelist.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+}));
 
 // ✅ Middlewares
 app.use(express.json());
